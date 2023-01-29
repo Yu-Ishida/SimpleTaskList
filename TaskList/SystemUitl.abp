@@ -1,0 +1,9 @@
+/**
+	システムユーティリティ定義
+*/
+
+/**
+	Bool 値定義
+*/
+#define TRUE 1
+#define FALSE 0

@@ -1,0 +1,26 @@
+' ActiveBasic Project file.
+
+#VERSION=9
+
+#MODULETYPE=0
+
+#NAME=TaskList
+
+#PLATFORM=32
+
+#USEWINDOW=1
+
+#OPTION=&H00010002
+
+#OUTPUT_RELEASE=.\TaskList.exe
+
+#OUTPUT_DEBUG=.\TaskList_debug.exe
+
+#RESOURCE=0
+
+#SOURCE
+TaskList.abp
+MainWnd.sbp
+SystemUitl.abp
+FormUtil.abp
+TaskData.abp

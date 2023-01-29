@@ -1,0 +1,77 @@
+/**
+	フォームユーティリティ定義
+*/
+
+/**
+	タスクリストビューに表示する列名
+*/
+Dim LIST_VIEW_COLUMN_NAMES[ELM(5)] As String
+LIST_VIEW_COLUMN_NAMES[0] = "済"
+LIST_VIEW_COLUMN_NAMES[1] = "タスク名"
+LIST_VIEW_COLUMN_NAMES[2] = "開始予定日時"
+LIST_VIEW_COLUMN_NAMES[3] = "タスク内容"
+LIST_VIEW_COLUMN_NAMES[4] = "タスク完了日時"
+
+/**
+	説明ラベルに表示する文言
+*/
+Const NOTICE_MESSAGE = Ex"詳細を表示/編集を行うにはセルをダブルクリックして下さい。"
+
+/**
+	指定したリストビューに対して列を設定します。
+	listView: 列を設定するリストビューコントロール
+*/
+Sub SetListViewColumn(ByVal listView As HWND)
+	Dim colData As LVCOLUMN
+
+	' 済列
+	colData.mask = LVCF_FMT Or LVCF_TEXT Or LVCF_WIDTH Or LVCF_SUBITEM
+	colData.fmt = LVCFMT_LEFT
+	colData.cx = 100
+	colData.iSubItem = 0
+	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[0])
+	ListView_InsertColumn(listView, 0, colData)
+
+	' タスク名列
+	colData.iSubItem = 1
+	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[1])
+	ListView_InsertColumn(listView, 1, colData)
+
+	' 開始予定日時列
+	colData.iSubItem = 2
+	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[2])
+	ListView_InsertColumn(listView, 2, colData)
+
+	' タスク内容列
+	colData.iSubItem = 3
+	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[3])
+	ListView_InsertColumn(listView, 3, colData)
+
+	' タスク完了日時
+	colData.iSubItem = 4
+	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[4])
+	ListView_InsertColumn(listView, 4, colData)
+End Sub
+
+/**
+	指定した ListView から選択している行の Index を取得します。
+	Return: 選択している行の Index
+*/
+Function GetListViewSelectedRowIndex(ByVal listView As HWND) As Long
+	Dim selectedRowIndex = 0 As Long
+	Dim rowIndex = 0 As Long
+
+	' ListView 行数を取得する。
+	Dim rowCount = 0 As Long
+	rowCount = ListView_GetItemCount(listView)
+
+	For rowIndex = 0 To rowCount - 1 Step 1
+		' 選択している行 index を取得する。
+		If (ListView_GetItemState(listView, rowIndex, LVIS_SELECTED) = 1) Then
+			selectedRowIndex = rowIndex
+			Exit For
+		End If
+	Next rowIndex
+
+	GetListViewSelectedRowIndex = selectedRowIndex
+End Function

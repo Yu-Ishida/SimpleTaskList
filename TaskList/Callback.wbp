@@ -1,0 +1,124 @@
+'このファイルはウィンドウ定義ファイル（*.wnd）をもとに生成されています
+
+Dim _RadSys_InitCtrls As INITCOMMONCONTROLSEX
+_RadSys_InitCtrls.dwSize=Len(_RadSys_InitCtrls)
+_RadSys_InitCtrls.dwICC=ICC_WIN95_CLASSES
+InitCommonControlsEx(_RadSys_InitCtrls)
+
+Const LvTaskList=1000
+Const BtnAddItem=1001
+Const BtnDeleteRow=1002
+Const LbNotice=1003
+Const IDM_FileOpen=1004
+Const IDM_SaveAs=1005
+Const IDM_Save=1006
+Const IDM_Exit=1007
+Const IDM_VersionInfo=1008
+
+Dim hMainWnd As HWND
+Dim hFont_MainWnd As HFONT
+hFont_MainWnd=CreateFont(-12,0,0,0,400,0,0,0,128,3,2,1,32,"ＭＳ Ｐゴシック")
+Dim h3DFaceBrush As HBRUSH
+h3DFaceBrush=CreateSolidBrush(GetSysColor(COLOR_3DFACE))
+
+
+Dim hMenu_ID_MENU As HMENU
+hMenu_ID_MENU=CreateMenu()
+Dim hMenu_ID_MENU_1 As HMENU
+hMenu_ID_MENU_1=CreatePopupMenu()
+InsMenu hMenu_ID_MENU_1,0,MF_BYPOSITION,Ex"バージョン情報(&A)",IDM_VersionInfo,0,0
+InsMenu hMenu_ID_MENU,0,MF_BYPOSITION,Ex"ヘルプ(&H)",0,hMenu_ID_MENU_1,0
+Dim hMenu_ID_MENU_0 As HMENU
+hMenu_ID_MENU_0=CreatePopupMenu()
+InsMenu hMenu_ID_MENU_0,0,MF_BYPOSITION,Ex"終了(&X)",IDM_Exit,0,0
+InsMenu hMenu_ID_MENU_0,0,MF_BYPOSITION,Ex"上書き保存(&S)",IDM_Save,0,0
+InsMenu hMenu_ID_MENU_0,0,MF_BYPOSITION,Ex"名前をつけて保存(&A)",IDM_SaveAs,0,0
+InsMenu hMenu_ID_MENU_0,0,MF_BYPOSITION,Ex"ファイルを開く(&O)",IDM_FileOpen,0,0
+InsMenu hMenu_ID_MENU,0,MF_BYPOSITION,Ex"ファイル(&F)",0,hMenu_ID_MENU_0,0
+
+Sub TaskList_DestroyObjects()
+	DestroyMenu(hMenu_ID_MENU)
+	DestroyMenu(hMenu_ID_MENU_1)
+	DestroyMenu(hMenu_ID_MENU_0)
+	DeleteObject(hFont_MainWnd)
+	DeleteObject(h3DFaceBrush)
+End Sub
+
+Function EventCall_MainWnd(hWnd As HWND, message As DWord, wParam As WPARAM, lParam As LPARAM) As LRESULT
+	Select Case message
+		Case WM_DESTROY
+			MainWnd_Destroy()
+			SetMenu(hWnd,NULL)
+		Case WM_CREATE
+			hMainWnd=hWnd
+			SetMenu(hWnd,hMenu_ID_MENU)
+			CreateWindowEx(&H00000200,"SysListView32","",&H5000800d,10,40,670,400,hWnd,LvTaskList As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,LvTaskList),WM_SETFONT,hFont_MainWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"BUTTON","項目追加",&H50000000,10,5,88,30,hWnd,BtnAddItem As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,BtnAddItem),WM_SETFONT,hFont_MainWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"BUTTON","行削除",&H50000000,110,5,88,30,hWnd,BtnDeleteRow As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,BtnDeleteRow),WM_SETFONT,hFont_MainWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"STATIC","詳細を表示するには…",&H50000000,220,5,350,25,hWnd,LbNotice As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,LbNotice),WM_SETFONT,hFont_MainWnd As WPARAM,0)
+			MainWnd_Create(ByVal (lParam As VoidPtr))
+		Case WM_CLOSE
+			Dim cancel=0 As Integer
+			If cancel=0 Then DestroyWindow(hWnd)
+		Case WM_COMMAND
+			Select Case LOWORD(wParam)
+				Case BtnAddItem
+					Select Case HIWORD(wParam)
+						Case BN_CLICKED
+							MainWnd_BtnAddItem_Click()
+					End Select
+				Case BtnDeleteRow
+					Select Case HIWORD(wParam)
+						Case BN_CLICKED
+							MainWnd_BtnDeleteRow_Click()
+					End Select
+				Case IDM_FileOpen
+					MainWnd_IDM_FileOpen_MenuClick()
+				Case IDM_SaveAs
+					MainWnd_IDM_SaveAs_MenuClick()
+				Case IDM_Save
+					MainWnd_IDM_Save_MenuClick()
+				Case IDM_Exit
+					MainWnd_IDM_Exit_MenuClick()
+				Case IDM_VersionInfo
+					MainWnd_IDM_VersionInfo_MenuClick()
+			End Select
+		Case Else
+			EventCall_MainWnd=DefWindowProc(hWnd,message,wParam,lParam)
+			Exit Function
+	End Select
+	EventCall_MainWnd=0
+End Function
+
+Function DefaultCallProc(hWnd As HWND, message As DWord, wParam As WPARAM, lParam As LPARAM) As LRESULT
+	DefaultCallProc=DefWindowProc(hWnd,message,wParam,lParam)
+End Function
+
+Dim _RadSys_dlgwcl As WNDCLASSEX
+FillMemory(VarPtr(_RadSys_dlgwcl),Len(_RadSys_dlgwcl),0)
+_RadSys_dlgwcl.cbSize=Len(_RadSys_dlgwcl)
+_RadSys_dlgwcl.hInstance=GetModuleHandle(0)
+_RadSys_dlgwcl.style=CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
+_RadSys_dlgwcl.hIcon=LoadIcon(NULL,MAKEINTRESOURCE(IDI_APPLICATION))
+_RadSys_dlgwcl.hIconSm=LoadIcon(NULL,MAKEINTRESOURCE(IDI_WINLOGO))
+_RadSys_dlgwcl.hCursor=LoadCursor(NULL,MAKEINTRESOURCE(IDC_ARROW))
+_RadSys_dlgwcl.lpszClassName="NORMALDLG"
+_RadSys_dlgwcl.hbrBackground=h3DFaceBrush
+_RadSys_dlgwcl.lpfnWndProc=AddressOf(DefaultCallProc)
+RegisterClassEx(_RadSys_dlgwcl)
+
+Function DialogBox(hOwnerWnd As HWND, TemplateName As LPSTR) As LONG_PTR
+	Dim hDlg As HWND
+End Function
+Sub EndDialog(hWnd As HWND, lResult As Long)
+	EnableWindow(GetWindow(hWnd,GW_OWNER),1)
+	DestroyWindow(hWnd)
+	PostMessage(0,WM_QUIT,lResult,0)
+End Sub
+
+Function CreateDialog(hOwnerWnd As HWND, TemplateName As LPSTR) As HWND
+End Function

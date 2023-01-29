@@ -1,0 +1,31 @@
+WINDOW:MainWnd
+    HANDLE    = hMainWnd
+    POINT     = -2147483648,-2147483648
+    SIZE      = 700,500
+    CAPTION   = "TaskList"
+    STYLE     = &H10ca0000
+    EXSTYLE   = &H00000000
+    MENUID    = ID_MENU
+    ID        = 0
+    BGCOLOR   = 15
+    FONT      = -12,0,0,0,400,0,0,0,128,3,2,1,32,"ＭＳ Ｐゴシック"
+    CLASS     = "NORMAL"
+    CALLBACK  = MainWndProc
+    TYPE      = 0
+    FILEPATH  = MainWnd.sbp
+    ITEM      = LvTaskList,10,40,670,400,"",&H5000800d,&H00000200,9
+    ITEM      = BtnAddItem,10,5,88,30,"項目追加",&H50000000,&H00000000,1
+    ITEM      = BtnDeleteRow,110,5,88,30,"行削除",&H50000000,&H00000000,1
+    ITEM      = LbNotice,220,5,350,25,"詳細を表\示するには…",&H50000000,&H00000000,11
+END
+MENU:ID_MENU
+    POPUP     = "ファイル(&F)",0
+        ITEM      = IDM_FileOpen,"ファイルを開く(&O)",0
+        ITEM      = IDM_SaveAs,"名前をつけて保存(&A)",0
+        ITEM      = IDM_Save,"上書き保存(&S)",0
+        ITEM      = IDM_Exit,"終了(&X)",0
+    END
+    POPUP     = "ヘルプ(&H)",0
+        ITEM      = IDM_VersionInfo,"バージョン情報(&A)",0
+    END
+END

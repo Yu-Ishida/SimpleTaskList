@@ -1,0 +1,15 @@
+#include "TaskList.idx"
+
+'---------------------------
+'  Window Message Loop
+'---------------------------
+Dim msgMain As MSG, iResult As Long
+Do
+	iResult=GetMessage(msgMain,0,0,0)
+	If iResult=0 or iResult=-1 Then Exit Do
+	TranslateMessage(msgMain)
+	DispatchMessage(msgMain)
+Loop
+
+' Call destructores and exit process
+End

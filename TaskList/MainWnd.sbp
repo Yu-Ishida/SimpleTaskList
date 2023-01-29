@@ -1,0 +1,94 @@
+'-----------------------------------------------------------------------------
+'  イベント プロシージャ
+'-----------------------------------------------------------------------------
+' このファイルには、ウィンドウ [MainWnd] に関するイベントをコーディングします。
+' ウィンドウ ハンドル: hMainWnd
+
+' TODO: この位置にグローバルな変数、構造体、定数、関数を定義します。
+
+
+'-----------------------------------------------------------------------------
+' ウィンドウメッセージを処理するためのコールバック関数
+
+Function MainWndProc(hWnd As HWND, dwMsg As DWord, wParam As WPARAM, lParam As LPARAM) As DWord
+	' TODO: この位置にウィンドウメッセージを処理するためのコードを記述します。
+
+	' イベントプロシージャの呼び出しを行います。
+	MainWndProc=EventCall_MainWnd(hWnd,dwMsg,wParam,lParam)
+End Function
+
+
+'-----------------------------------------------------------------------------
+' ここから下は、イベントプロシージャを記述するための領域になります。
+
+Sub MainWnd_Destroy()
+	TaskList_DestroyObjects()
+	PostQuitMessage(0)
+End Sub
+
+
+/**
+	ウィンドウ作成時のイベント
+	CreateStruct: 作成したウィンドウの情報
+*/
+Sub MainWnd_Create(ByRef CreateStruct As CREATESTRUCT)
+	' 説明ラベルの設定
+	SetDlgItemText(hMainWnd, LbNotice, NOTICE_MESSAGE)
+	' 列情報の設定
+	SetListViewColumn(GetDlgItem(hMainWnd, LvTaskList))
+End Sub
+
+/**
+	「項目追加」ボタン押下時のイベント
+*/
+Sub MainWnd_BtnAddItem_Click()
+	' 項目追加ダイアログボックスを開く
+End Sub
+
+/**
+	「行削除」ボタン押下時のイベント
+*/
+Sub MainWnd_BtnDeleteRow_Click()
+	' 選択行を取得する。
+	Dim selectedRowIndex = 0 As Long
+	selectedRowIndex = GetListViewSelectedRowIndex(GetDlgItem(hMainWnd, LvTaskList))
+
+	' 選択行のを ListView から削除する。
+
+End Sub
+
+/**
+	「ファイルを開く」メニュー選択時のイベント
+*/
+Sub MainWnd_IDM_FileOpen_MenuClick()
+	' ファイルを開くダイアログを表示する。
+End Sub
+
+/**
+	「名前をつけて保存」メニュー選択時のイベント
+*/
+Sub MainWnd_IDM_SaveAs_MenuClick()
+	' 保存ダイアログを表示して CSV ファイルで ListView 上の表示内容を保存する。
+End Sub
+
+/**
+	「上書き保存」メニュー選択時のイベント
+*/
+Sub MainWnd_IDM_Save_MenuClick()
+	' ファイルが未保存の場合は、名前をつけて保存処理を実行する。
+
+End Sub
+
+/**
+	「終了」メニュー選択時のイベント
+*/
+Sub MainWnd_IDM_Exit_MenuClick()
+	DestroyWindow(hMainWnd)
+End Sub
+
+/**
+	「バージョン情報」メニュー選択時のイベント
+*/
+Sub MainWnd_IDM_VersionInfo_MenuClick()
+
+End Sub
