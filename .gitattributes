@@ -1,8 +1,9 @@
 # 文字コード設定
-*.wpb diff=sjis
-*.abp diff=sjis
+*.?bp diff=sjis
 *.idx diff=sjis
 *.wnd diff=sjis
+*.wrk diff=sjis
+*.pj  diff=sjis
 
 # 言語設定 (どちらかというとC言語にした方が…?)
 *.?bp linguist-language=ActiveBasic
