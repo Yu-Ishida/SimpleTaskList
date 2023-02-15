@@ -5,5 +5,13 @@
 *.wrk diff=sjis
 *.pj  diff=sjis
 
+# 改行コード設定
+*     text=auto
+#*.?bp text eol=crlf
+#*.idx text eol=crlf
+#*.wnd text eol=crlf
+*.wrk text eol=crlf
+*.pj  text eol=crlf
+
 # 言語設定 (どちらかというとC言語にした方が…?)
 *.?bp linguist-language=ActiveBasic
