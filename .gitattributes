@@ -7,9 +7,9 @@
 
 # 改行コード設定
 *     text=auto
-#*.?bp text eol=crlf
-#*.idx text eol=crlf
-#*.wnd text eol=crlf
+*.?bp text eol=crlf
+*.idx text eol=crlf
+*.wnd text eol=crlf
 *.wrk text eol=crlf
 *.pj  text eol=crlf
 
