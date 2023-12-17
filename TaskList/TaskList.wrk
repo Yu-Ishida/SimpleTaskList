@@ -1,11 +1,9 @@
 case4
 
-text,"TaskData.abp",0,21,817,817
-rad,MainWnd
-text,"FormUtil.abp",0,4,1584,1611
-text,"MainWnd.sbp",0,0,1725,1725
+text,"MainWnd.sbp",0,0,1552,1552
+text,"FormUtil.abp",0,67,3485,3485
 
 0
 1
-0
+1
 0,0,0,1,1

@@ -9,15 +9,30 @@ Const LvTaskList=1000
 Const BtnAddItem=1001
 Const BtnDeleteRow=1002
 Const LbNotice=1003
-Const IDM_FileOpen=1004
-Const IDM_SaveAs=1005
-Const IDM_Save=1006
-Const IDM_Exit=1007
-Const IDM_VersionInfo=1008
+Const BtnRegist=1004
+Const BtnCancel=1005
+Const LbCompFlag=1006
+Const LbTaskName=1007
+Const LbTaskStartDateTime=1008
+Const LbTaskDescription=1009
+Const LbTaskCompleteDate=1010
+Const CbTaskComplete=1011
+Const TbTaskName=1012
+Const TbTaskStartDate=1013
+Const TbTaskDescription=1014
+Const TbTaskCompleteDate=1015
+Const IDM_FileOpen=1016
+Const IDM_SaveAs=1017
+Const IDM_Save=1018
+Const IDM_Exit=1019
+Const IDM_VersionInfo=1020
 
 Dim hMainWnd As HWND
 Dim hFont_MainWnd As HFONT
 hFont_MainWnd=CreateFont(-12,0,0,0,400,0,0,0,128,3,2,1,32,"ＭＳ Ｐゴシック")
+Dim hAddTaskWnd As HWND
+Dim hFont_AddTaskWnd As HFONT
+hFont_AddTaskWnd=CreateFont(-12,0,0,0,400,0,0,0,128,3,2,1,32,"ＭＳ Ｐゴシック")
 Dim h3DFaceBrush As HBRUSH
 h3DFaceBrush=CreateSolidBrush(GetSysColor(COLOR_3DFACE))
 
@@ -41,6 +56,7 @@ Sub TaskList_DestroyObjects()
 	DestroyMenu(hMenu_ID_MENU_1)
 	DestroyMenu(hMenu_ID_MENU_0)
 	DeleteObject(hFont_MainWnd)
+	DeleteObject(hFont_AddTaskWnd)
 	DeleteObject(h3DFaceBrush)
 End Sub
 
@@ -94,6 +110,60 @@ Function EventCall_MainWnd(hWnd As HWND, message As DWord, wParam As WPARAM, lPa
 	EventCall_MainWnd=0
 End Function
 
+Function EventCall_AddTaskWnd(hWnd As HWND, message As DWord, wParam As WPARAM, lParam As LPARAM) As LRESULT
+	Select Case message
+		Case WM_INITDIALOG
+			hAddTaskWnd=hWnd
+			CreateWindowEx(&H00000000,"BUTTON","登録",&H50010000,260,320,100,40,hWnd,BtnRegist As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,BtnRegist),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"BUTTON","キャンセル",&H50000000,370,320,100,40,hWnd,BtnCancel As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,BtnCancel),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"STATIC","完了状態",&H50000000,20,10,53,12,hWnd,LbCompFlag As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,LbCompFlag),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"STATIC","タスク名",&H50000000,20,60,50,12,hWnd,LbTaskName As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,LbTaskName),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"STATIC","タスク開始日時",&H50000000,20,110,83,12,hWnd,LbTaskStartDateTime As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,LbTaskStartDateTime),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"STATIC","タスク内容",&H50000000,20,160,59,12,hWnd,LbTaskDescription As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,LbTaskDescription),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"STATIC","タスク完了日時",&H50000000,20,290,83,12,hWnd,LbTaskCompleteDate As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,LbTaskCompleteDate),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000000,"BUTTON","タスクを完了する場合はチェックを付けます。",&H50010003,20,30,246,15,hWnd,CbTaskComplete As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,CbTaskComplete),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000200,"EDIT","",&H50010000,20,80,450,21,hWnd,TbTaskName As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,TbTaskName),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000200,"EDIT","",&H50010000,20,130,150,21,hWnd,TbTaskStartDate As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,TbTaskStartDate),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000200,"EDIT","",&H50311004,20,180,450,100,hWnd,TbTaskDescription As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,TbTaskDescription),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			CreateWindowEx(&H00000200,"EDIT","",&H50000800,20,310,150,21,hWnd,TbTaskCompleteDate As HMENU,GetModuleHandle(0),0)
+			SendMessage(GetDlgItem(hWnd,TbTaskCompleteDate),WM_SETFONT,hFont_AddTaskWnd As WPARAM,0)
+			AddTaskWnd_Create(ByVal (lParam As VoidPtr))
+		Case WM_DESTROY
+			AddTaskWnd_Destroy()
+		Case WM_CLOSE
+			Dim cancel=0 As Integer
+			If cancel=0 Then EndDialog(hWnd,0)
+		Case WM_COMMAND
+			Select Case LOWORD(wParam)
+				Case BtnRegist
+					Select Case HIWORD(wParam)
+						Case BN_CLICKED
+							AddTaskWnd_BtnRegist_Click()
+					End Select
+				Case BtnCancel
+					Select Case HIWORD(wParam)
+						Case BN_CLICKED
+							AddTaskWnd_BtnCancel_Click()
+					End Select
+			End Select
+		Case Else
+			EventCall_AddTaskWnd=DefWindowProc(hWnd,message,wParam,lParam)
+			Exit Function
+	End Select
+	EventCall_AddTaskWnd=0
+End Function
+
 Function DefaultCallProc(hWnd As HWND, message As DWord, wParam As WPARAM, lParam As LPARAM) As LRESULT
 	DefaultCallProc=DefWindowProc(hWnd,message,wParam,lParam)
 End Function
@@ -113,6 +183,26 @@ RegisterClassEx(_RadSys_dlgwcl)
 
 Function DialogBox(hOwnerWnd As HWND, TemplateName As LPSTR) As LONG_PTR
 	Dim hDlg As HWND
+	If lstrcmp(TemplateName,"AddTaskWnd")=0 Then
+		hAddTaskWnd=CreateWindowEx(&H00000000,"NORMALDLG","タスクの登録/編集",&H00c00000,-2147483648,-2147483648,500,400,hOwnerWnd,0 As HMENU,GetModuleHandle(0),0)
+		hDlg=hAddTaskWnd
+		SetWindowLong(hAddTaskWnd,GWL_WNDPROC,AddressOf(AddTaskWndProc) As LONG_PTR)
+		SendMessage(hAddTaskWnd,WM_INITDIALOG,0,0)
+		ShowWindow(hAddTaskWnd,SW_SHOW)
+	Else
+		Exit Function
+	End If
+	EnableWindow(hOwnerWnd,0)
+
+	Dim msg As MSG, iResult As Long
+	Do
+		iResult=GetMessage(msg,0,0,0)
+		If iResult=0 or iResult=-1 Then Exit Do
+		If IsDialogMessage(hDlg,msg) Then Continue
+		TranslateMessage(msg)
+		DispatchMessage(msg)
+	Loop
+	DialogBox=msg.wParam
 End Function
 Sub EndDialog(hWnd As HWND, lResult As Long)
 	EnableWindow(GetWindow(hWnd,GW_OWNER),1)

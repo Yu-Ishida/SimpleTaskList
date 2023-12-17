@@ -22,7 +22,7 @@ Const NOTICE_MESSAGE = Ex"Ú×‚ğ•\¦/•ÒW‚ğs‚¤‚É‚ÍƒZƒ‹‚ğƒ_ƒuƒ‹ƒNƒŠƒbƒN‚µ‚Ä‰º‚³‚
 	listView: —ñ‚ğİ’è‚·‚éƒŠƒXƒgƒrƒ…[ƒRƒ“ƒgƒ[ƒ‹
 */
 Sub SetListViewColumn(ByVal listView As HWND)
-	Dim colData As LVCOLUMN
+	Dim colData = NULL As LVCOLUMN
 
 	' Ï—ñ
 	colData.mask = LVCF_FMT Or LVCF_TEXT Or LVCF_WIDTH Or LVCF_SUBITEM
@@ -75,3 +75,55 @@ Function GetListViewSelectedRowIndex(ByVal listView As HWND) As Long
 
 	GetListViewSelectedRowIndex = selectedRowIndex
 End Function
+
+/**
+	w’è‚µ‚½ƒ_ƒCƒAƒƒOƒEƒBƒ“ƒhƒE‚ğ’†‰›‚É•\¦‚µ‚Ü‚·B
+	ownerWindow	: eƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹
+	dialogWindow: •\¦‚·‚éƒ_ƒCƒAƒƒO‚Ìƒnƒ“ƒhƒ‹ 
+*/
+Sub SetDialogCenter(ByVal ownerWindow As HWND, ByVal dialogWindow As HWND)
+	Dim ownerWindowRect = NULL As RECT
+	Dim dialogWindowRect = NULL As RECT
+	Dim x = 0 As Single, y = 0 As Single
+
+	' ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌÀ•W‚ğæ“¾
+	GetWindowRect(ownerWindow, ownerWindowRect)
+	' ƒ_ƒCƒAƒƒOƒEƒBƒ“ƒhƒE‚ÌÀ•W‚ğæ“¾
+	GetWindowRect(dialogWindow	, dialogWindowRect)
+
+	' V‚µ‚¢À•W‚ğŒvZ
+	x = ((ownerWindowRect.right - ownerWindowRect.left) - (dialogWindowRect.right - dialogWindowRect.left)) / 2 + ownerWindowRect.left
+	y = ((ownerWindowRect.bottom - ownerWindowRect.top) - (dialogWindowRect.bottom - dialogWindowRect.top)) / 2 + ownerWindowRect.top
+
+	' ˆÊ’u‚ğ•ÏX
+	SetWindowPos(dialogWindow, NULL, x As Long, y As Long, 0, 0, SWP_NOSIZE)
+End Sub
+
+/**
+	w’è‚µ‚½ƒEƒBƒ“ƒhƒE‚ğƒXƒNƒŠ[ƒ“’†‰›‚É•\¦‚µ‚Ü‚·B
+	mainWndow: ’†S‚É•\¦‚³‚¹‚éƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹
+*/
+Sub SetWindowShowCenterScreen(ByVal mainWindow As HWND)
+	Dim mainWindowRect = NULL As RECT
+	Dim screenSizeX = 0 As Long
+	Dim screenSizeY = 0 As Long
+
+	' ƒvƒ‰ƒCƒ}ƒŠ[ƒXƒNƒŠ[ƒ“‚ÌƒTƒCƒY‚ğæ“¾
+	screenSizeX = GetSystemMetrics(SM_CXSCREEN)
+	screenSizeY = GetSystemMetrics(SM_CYSCREEN)
+
+	' w’è‚µ‚½ƒEƒBƒ“ƒhƒE‚ÌÀ•W‚ğæ“¾
+	GetWindowRect(mainWindow, mainWindowRect)
+
+	' V‚µ‚¢À•W‚ğŒvZ
+	Dim newWindowX = 0 As Single
+	Dim newWindowY = 0 As Single
+
+	newWindowX = (screenSizeX - (mainWindowRect.right - mainWindowRect.left)) / 2
+	newWindowY = (screenSizeY - (mainWindowRect.bottom - mainWindowRect.top)) / 2
+
+	' ˆÊ’u‚ğ•ÏX
+	SetWindowPos(mainWindow, NULL, newWindowX As Long, newWindowY As Long, 0, 0, SWP_NOSIZE)
+
+
+End Sub

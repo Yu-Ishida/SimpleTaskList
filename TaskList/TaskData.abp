@@ -8,7 +8,7 @@
 Class TaskData
 Private
 	' タスクの完了状態
-	isCompleted = FALSE As Byte
+	isCompleted As Byte
 	' タスク名
 	taskName As BytePtr
 	' タスク開始日時

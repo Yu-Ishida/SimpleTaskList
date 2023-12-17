@@ -8,7 +8,7 @@
 
 #PLATFORM=32
 
-#USEWINDOW=1
+#USEWINDOW=2
 
 #OPTION=&H00010002
 
@@ -24,3 +24,4 @@ MainWnd.sbp
 SystemUitl.abp
 FormUtil.abp
 TaskData.abp
+AddTaskWnd.sbp

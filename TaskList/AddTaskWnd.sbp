@@ -1,0 +1,73 @@
+'-----------------------------------------------------------------------------
+'  イベント プロシージャ
+'-----------------------------------------------------------------------------
+' このファイルには、ウィンドウ [AddTaskWnd] に関するイベントをコーディングします。
+' ウィンドウ ハンドル: hAddTaskWnd
+
+' TODO: この位置にグローバルな変数、構造体、定数、関数を定義します。
+
+' 親ウィンドウから受け取るタスクデータオブジェクト
+Dim fromParentTaskData As *TaskData
+
+/**
+	タスク追加ウィンドウに表示するタスクデータを設定します。(親ウィンドウ → 子ウィンドウへの設定)
+	TaskData: 設定するタスクデータオブジェクト
+*/
+Sub SetTaskDataParentToChild(ByVal taskData As *TaskData)
+	fromParentTaskData = taskData
+End Sub
+
+'-----------------------------------------------------------------------------
+' ウィンドウメッセージを処理するためのコールバック関数
+
+Function AddTaskWndProc(hWnd As HWND, dwMsg As DWord, wParam As WPARAM, lParam As LPARAM) As DWord
+	' TODO: この位置にウィンドウメッセージを処理するためのコードを記述します。
+
+	' イベントプロシージャの呼び出しを行います。
+	AddTaskWndProc=EventCall_AddTaskWnd(hWnd,dwMsg,wParam,lParam)
+End Function
+
+
+'-----------------------------------------------------------------------------
+' ここから下は、イベントプロシージャを記述するための領域になります。
+
+/**
+	ウィンドウ作成時のイベント
+	CreateStruct: 作成したウィンドウの情報
+*/
+Sub AddTaskWnd_Create(ByRef CreateStruct As CREATESTRUCT)
+	' ウィンドウの表示位置を親ウィンドウに対して中心となるように調整する。
+	SetDialogCenter(hMainWnd, hAddTaskWnd)
+
+
+	If (fromParentTaskData = NULL) Then
+		' 新規データの作成
+
+	Else
+		' 既存データの編集
+
+	End If
+End Sub
+
+/**
+	ウィンドウ破棄時のイベント
+*/
+Sub AddTaskWnd_Destroy()
+	' タスクデータを破棄する。
+	'Delete TaskData
+End Sub
+
+/**
+	「登録」ボタン押下時のイベント
+*/
+Sub AddTaskWnd_BtnRegist_Click()
+	' 呼び出し元にタスクデータのオブジェクトを返却する。
+	EndDialog(hAddTaskWnd, 0)
+End Sub
+
+/**
+	「キャンセル」ボタン押下時のイベント
+*/
+Sub AddTaskWnd_BtnCancel_Click()
+	EndDialog(hAddTaskWnd, 0)
+End Sub

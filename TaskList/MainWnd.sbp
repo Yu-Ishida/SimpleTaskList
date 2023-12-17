@@ -6,6 +6,15 @@
 
 ' TODO: この位置にグローバルな変数、構造体、定数、関数を定義します。
 
+' 子ウィンドウから受け取るタスクデータオブジェクト
+Dim fromChildTaskData As *TaskData
+/**
+	タスク追加ウィンドウに表示するタスクデータを設定します。(親ウィンドウ → 子ウィンドウへの設定)
+	TaskData: 設定するタスクデータオブジェクト
+*/
+Sub SetTaskDataChildToParent(ByVal taskData As *TaskData)
+
+End Sub
 
 '-----------------------------------------------------------------------------
 ' ウィンドウメッセージを処理するためのコールバック関数
@@ -32,6 +41,8 @@ End Sub
 	CreateStruct: 作成したウィンドウの情報
 */
 Sub MainWnd_Create(ByRef CreateStruct As CREATESTRUCT)
+	' ウィンドウをプライマリースクリーンの中央に表示する。
+	SetWindowShowCenterScreen(hMainWnd)
 	' 説明ラベルの設定
 	SetDlgItemText(hMainWnd, LbNotice, NOTICE_MESSAGE)
 	' 列情報の設定
@@ -42,7 +53,11 @@ End Sub
 	「項目追加」ボタン押下時のイベント
 */
 Sub MainWnd_BtnAddItem_Click()
+	' 親ウィンドウから子ウィンドウに対してタスクデータは NULL を設定する。
+	SetTaskDataParentToChild(NULL)
+
 	' 項目追加ダイアログボックスを開く
+	DialogBox(hMainWnd, "AddTaskWnd")
 End Sub
 
 /**

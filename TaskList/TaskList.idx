@@ -13,6 +13,7 @@
 #include "SystemUitl.abp"
 #include "FormUtil.abp"
 #include "TaskData.abp"
+#include "AddTaskWnd.sbp"
 
 'RADツールが生成するウィンドウ生成プログラム
 #include "MakeWindow.wbp"
