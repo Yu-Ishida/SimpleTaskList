@@ -3,7 +3,7 @@
 */
 
 /**
-	Bool 値定義
+	BOOL 値定義
 */
 #define TRUE 1
 #define FALSE 0

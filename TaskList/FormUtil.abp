@@ -2,15 +2,15 @@
 	ƒtƒH[ƒ€ƒ†[ƒeƒBƒŠƒeƒB’è‹`
 */
 
+' ƒ^ƒXƒNƒŠƒXƒgƒrƒ…[‚Ì—ñ•
+Const LIST_VIEW_COL0_WIDTH = 200
+
 /**
 	ƒ^ƒXƒNƒŠƒXƒgƒrƒ…[‚É•\¦‚·‚é—ñ–¼
 */
-Dim LIST_VIEW_COLUMN_NAMES[ELM(5)] As String
-LIST_VIEW_COLUMN_NAMES[0] = "Ï"
-LIST_VIEW_COLUMN_NAMES[1] = "ƒ^ƒXƒN–¼"
-LIST_VIEW_COLUMN_NAMES[2] = "ŠJn—\’è“ú"
-LIST_VIEW_COLUMN_NAMES[3] = "ƒ^ƒXƒN“à—e"
-LIST_VIEW_COLUMN_NAMES[4] = "ƒ^ƒXƒNŠ®—¹“ú"
+Dim LIST_VIEW_COLUMN_NAMES[ELM(2)] As String
+LIST_VIEW_COLUMN_NAMES[0] = "ƒ^ƒXƒN–¼"
+LIST_VIEW_COLUMN_NAMES[1] = "ƒ^ƒXƒN“à—e"
 
 /**
 	à–¾ƒ‰ƒxƒ‹‚É•\¦‚·‚é•¶Œ¾
@@ -21,43 +21,39 @@ Const NOTICE_MESSAGE = Ex"Ú×‚ğ•\¦/•ÒW‚ğs‚¤‚É‚ÍƒZƒ‹‚ğƒ_ƒuƒ‹ƒNƒŠƒbƒN‚µ‚Ä‰º‚³‚
 	w’è‚µ‚½ƒŠƒXƒgƒrƒ…[‚É‘Î‚µ‚Ä—ñ‚ğİ’è‚µ‚Ü‚·B
 	listView: —ñ‚ğİ’è‚·‚éƒŠƒXƒgƒrƒ…[ƒRƒ“ƒgƒ[ƒ‹
 */
-Sub SetListViewColumn(ByVal listView As HWND)
+Sub SetListViewColumn(listView As HWND)
+	Dim rectListView = NULL As RECT
 	Dim colData = NULL As LVCOLUMN
 
-	' Ï—ñ
+	' ListView ƒRƒ“ƒgƒ[ƒ‹‚ÌƒTƒCƒY‚ğæ“¾
+	GetClientRect(listView, rectListView)
+
+	' ƒ^ƒXƒN–¼—ñ
 	colData.mask = LVCF_FMT Or LVCF_TEXT Or LVCF_WIDTH Or LVCF_SUBITEM
 	colData.fmt = LVCFMT_LEFT
-	colData.cx = 100
+	colData.cx = LIST_VIEW_COL0_WIDTH
 	colData.iSubItem = 0
 	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[0])
 	ListView_InsertColumn(listView, 0, colData)
 
 	' ƒ^ƒXƒN–¼—ñ
 	colData.iSubItem = 1
+	colData.cx = rectListView.right - LIST_VIEW_COL0_WIDTH
 	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[1])
 	ListView_InsertColumn(listView, 1, colData)
 
-	' ŠJn—\’è“ú—ñ
-	colData.iSubItem = 2
-	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[2])
-	ListView_InsertColumn(listView, 2, colData)
-
-	' ƒ^ƒXƒN“à—e—ñ
-	colData.iSubItem = 3
-	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[3])
-	ListView_InsertColumn(listView, 3, colData)
-
-	' ƒ^ƒXƒNŠ®—¹“ú
-	colData.iSubItem = 4
-	colData.pszText = StrPtr(LIST_VIEW_COLUMN_NAMES[4])
-	ListView_InsertColumn(listView, 4, colData)
+	' ListView ‚ÌƒXƒ^ƒCƒ‹‚ğİ’è‚·‚éB
+	Dim listViewStyle = 0 As DWord
+	listViewStyle = ListView_GetExtendedListViewStyle(listView)
+	listViewStyle Or = LVS_EX_CHECKBOXES Or LVS_EX_FULLROWSELECT Or LVS_EX_GRIDLINES
+	ListView_SetExtendedListViewStyle(listView, listViewStyle)
 End Sub
 
 /**
 	w’è‚µ‚½ ListView ‚©‚ç‘I‘ğ‚µ‚Ä‚¢‚és‚Ì Index ‚ğæ“¾‚µ‚Ü‚·B
 	Return: ‘I‘ğ‚µ‚Ä‚¢‚és‚Ì Index
 */
-Function GetListViewSelectedRowIndex(ByVal listView As HWND) As Long
+Function GetListViewSelectedRowIndex(listView As HWND) As Long
 	Dim selectedRowIndex = 0 As Long
 	Dim rowIndex = 0 As Long
 
@@ -67,7 +63,7 @@ Function GetListViewSelectedRowIndex(ByVal listView As HWND) As Long
 
 	For rowIndex = 0 To rowCount - 1 Step 1
 		' ‘I‘ğ‚µ‚Ä‚¢‚és index ‚ğæ“¾‚·‚éB
-		If (ListView_GetItemState(listView, rowIndex, LVIS_SELECTED) = 1) Then
+		If (ListView_GetItemState(listView, rowIndex, LVIS_SELECTED) = LVIS_SELECTED) Then
 			selectedRowIndex = rowIndex
 			Exit For
 		End If
@@ -81,10 +77,10 @@ End Function
 	ownerWindow	: eƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹
 	dialogWindow: •\¦‚·‚éƒ_ƒCƒAƒƒO‚Ìƒnƒ“ƒhƒ‹ 
 */
-Sub SetDialogCenter(ByVal ownerWindow As HWND, ByVal dialogWindow As HWND)
+Sub SetDialogCenter(ownerWindow As HWND, dialogWindow As HWND)
 	Dim ownerWindowRect = NULL As RECT
 	Dim dialogWindowRect = NULL As RECT
-	Dim x = 0 As Single, y = 0 As Single
+	Dim x = 0 As Double, y = 0 As Double
 
 	' ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌÀ•W‚ğæ“¾
 	GetWindowRect(ownerWindow, ownerWindowRect)
@@ -103,7 +99,7 @@ End Sub
 	w’è‚µ‚½ƒEƒBƒ“ƒhƒE‚ğƒXƒNƒŠ[ƒ“’†‰›‚É•\¦‚µ‚Ü‚·B
 	mainWndow: ’†S‚É•\¦‚³‚¹‚éƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹
 */
-Sub SetWindowShowCenterScreen(ByVal mainWindow As HWND)
+Sub SetWindowShowCenterScreen(mainWindow As HWND)
 	Dim mainWindowRect = NULL As RECT
 	Dim screenSizeX = 0 As Long
 	Dim screenSizeY = 0 As Long
@@ -116,14 +112,12 @@ Sub SetWindowShowCenterScreen(ByVal mainWindow As HWND)
 	GetWindowRect(mainWindow, mainWindowRect)
 
 	' V‚µ‚¢À•W‚ğŒvZ
-	Dim newWindowX = 0 As Single
-	Dim newWindowY = 0 As Single
+	Dim newWindowX = 0 As Double
+	Dim newWindowY = 0 As Double
 
 	newWindowX = (screenSizeX - (mainWindowRect.right - mainWindowRect.left)) / 2
 	newWindowY = (screenSizeY - (mainWindowRect.bottom - mainWindowRect.top)) / 2
 
 	' ˆÊ’u‚ğ•ÏX
 	SetWindowPos(mainWindow, NULL, newWindowX As Long, newWindowY As Long, 0, 0, SWP_NOSIZE)
-
-
 End Sub

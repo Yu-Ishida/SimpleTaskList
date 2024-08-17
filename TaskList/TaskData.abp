@@ -11,35 +11,25 @@ Private
 	isCompleted As Byte
 	' タスク名
 	taskName As BytePtr
-	' タスク開始日時
-	taskStartDateTime As BytePtr
 	' タスク内容
 	taskDetail As BytePtr
-	' タスク完了時刻
-	taskCompletedDateTime As BytePtr
 Public
 
 	/**
 		コンストラクタ
 		isComp				: タスク完了状態
 		tName				: タスク名
-		tStartDateTime		: タスク開始日時
 		tDetail				: タスク内容
-		tCompletedDateTime	: タスク完了時刻
 	*/
-	Sub TaskData(ByVal isComp As Byte, ByVal tName As BytePtr, ByVal tStartDateTime As BytePtr, ByVal tDetail As BytePtr, ByVal tCompletedDateTime As BytePtr)
+	Sub TaskData(isComp As Byte, tName As BytePtr, tDetail As BytePtr)
 		' メモリ確保
-		isCompleted = malloc(lstrlen(tName) + 1)
-		tStartDateTime = malloc(lstrlen(tStartDateTime) + 1)
-		tDetail = malloc(tstrlen(tDetail) + 1)
-		tCompletedDateTime = malloc(tstrlen(tDetail) + 1)
+		taskName = calloc(lstrlen(tName) + 1)
+		taskDetail = calloc(lstrlen(tDetail) + 1)
 
 		' 値代入
 		isCompleted = isComp
 		lstrcpy(taskName, tName)
-		lstrcpy(taskStartDateTime, tStartDateTime)
 		lstrcpy(taskDetail, tDetail)
-		lstrcpy(taskCompletedDateTime, tCompletedDateTime)
 	End Sub
 
 	/**
@@ -48,9 +38,7 @@ Public
 	Sub ~TaskData()
 		' 文字列変数のメモリを開放
 		free(taskName)
-		free(taskStartDateTime)
 		free(taskDetail)
-		free(taskCompletedDateTime)
 	End Sub
 
 	/**
@@ -70,26 +58,10 @@ Public
 	End Function
 
 	/**
-		タスク開始日時を取得します。
-		Return: タスク完了日時
-	*/
-	Function GetTaskStartDateTime() As BytePtr
-		GetTaskStartDateTime = taskStartDateTime
-	End Function
-
-	/**
 		タスク内容を取得します。
 		Return: タスク内容
 	*/
 	Function GetTaskDetail() As BytePtr
 		GetTaskDetail = taskDetail
-	End Function
-
-	/**
-		タスク完了日時を取得します。
-		Return: タスク完了日時
-	*/
-	Function GetTaskCompletedDateTime() As BytePtr
-		GetTaskCompletedDateTime = taskCompletedDateTime
 	End Function
 End Class

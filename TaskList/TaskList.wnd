@@ -14,14 +14,14 @@ WINDOW:MainWnd
     TYPE      = 0
     FILEPATH  = MainWnd.sbp
     ITEM      = LvTaskList,10,40,670,400,"",&H5000800d,&H00000200,9
-    ITEM      = BtnAddItem,10,5,88,30,"項目追加",&H50000000,&H00000000,1
+    ITEM      = BtnAddItem,10,5,88,30,"項目追加",&H50010000,&H00000000,1
     ITEM      = BtnDeleteRow,110,5,88,30,"行削除",&H50000000,&H00000000,1
     ITEM      = LbNotice,220,5,350,25,"詳細を表\示するには…",&H50000000,&H00000000,11
 END
 WINDOW:AddTaskWnd
     HANDLE    = hAddTaskWnd
-    POINT     = -1,-1
-    SIZE      = 500,400
+    POINT     = -2147483648,-2147483648
+    SIZE      = 500,330
     CAPTION   = "タスクの登録/編集"
     STYLE     = &H00c00000
     EXSTYLE   = &H00000000
@@ -32,24 +32,20 @@ WINDOW:AddTaskWnd
     CALLBACK  = AddTaskWndProc
     TYPE      = 1
     FILEPATH  = AddTaskWnd.sbp
-    ITEM      = BtnRegist,260,320,100,40,"登録",&H50010000,&H00000000,1
-    ITEM      = BtnCancel,370,320,100,40,"キャンセル",&H50000000,&H00000000,1
+    ITEM      = BtnRegist,260,250,100,40,"登録",&H50010000,&H00000000,1
+    ITEM      = BtnCancel,370,250,100,40,"キャンセル",&H50000000,&H00000000,1
     ITEM      = LbCompFlag,20,10,53,12,"完了状態",&H50000000,&H00000000,11
     ITEM      = LbTaskName,20,60,50,12,"タスク名",&H50000000,&H00000000,11
-    ITEM      = LbTaskStartDateTime,20,110,83,12,"タスク開始日時",&H50000000,&H00000000,11
-    ITEM      = LbTaskDescription,20,160,59,12,"タスク内容",&H50000000,&H00000000,11
-    ITEM      = LbTaskCompleteDate,20,290,83,12,"タスク完了日時",&H50000000,&H00000000,11
-    ITEM      = CbTaskComplete,20,30,246,15,"タスクを完了する場合はチェックを付けます。",&H50010003,&H00000000,2
+    ITEM      = LbTaskDescription,20,120,59,12,"タスク内容",&H50000000,&H00000000,11
+    ITEM      = CbTaskComplete,20,30,246,15,"タスクを完了する場合はチェックを付けます。",&H50000003,&H00000000,2
     ITEM      = TbTaskName,20,80,450,21,"",&H50010000,&H00000200,4
-    ITEM      = TbTaskStartDate,20,130,150,21,"",&H50010000,&H00000200,4
-    ITEM      = TbTaskDescription,20,180,450,100,"",&H50311004,&H00000200,4
-    ITEM      = TbTaskCompleteDate,20,310,150,21,"",&H50000800,&H00000200,4
+    ITEM      = TbTaskDescription,20,140,450,100,"",&H50311004,&H00000200,4
 END
 MENU:ID_MENU
     POPUP     = "ファイル(&F)",0
         ITEM      = IDM_FileOpen,"ファイルを開く(&O)",0
-        ITEM      = IDM_SaveAs,"名前をつけて保存(&A)",0
         ITEM      = IDM_Save,"上書き保存(&S)",0
+        ITEM      = IDM_SaveAs,"名前をつけて保存(&A)",0
         ITEM      = IDM_Exit,"終了(&X)",0
     END
     POPUP     = "ヘルプ(&H)",0

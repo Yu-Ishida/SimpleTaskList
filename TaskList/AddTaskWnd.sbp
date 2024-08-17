@@ -8,6 +8,8 @@
 
 ' 親ウィンドウから受け取るタスクデータオブジェクト
 Dim fromParentTaskData As *TaskData
+' 親ウィンドウへ返却するタスクデータオブジェクト
+Dim returnChildTaskData As *TaskData
 
 /**
 	タスク追加ウィンドウに表示するタスクデータを設定します。(親ウィンドウ → 子ウィンドウへの設定)
@@ -17,10 +19,22 @@ Sub SetTaskDataParentToChild(ByVal taskData As *TaskData)
 	fromParentTaskData = taskData
 End Sub
 
+/**
+	本ウィンドウで作成したタスクデータオブジェクトを親ウィンドウより取得します。
+	return: 本ウィドウで作成したタスクデータオブジェクト
+*/
+Function GetTaskDataFromChild() As *TaskData
+	GetTaskDataFromChild = returnChildTaskData
+End Function
+
 '-----------------------------------------------------------------------------
 ' ウィンドウメッセージを処理するためのコールバック関数
 
+#ifdef _WIN64
+Function AddTaskWndProc(hWnd As HWND, dwMsg As DWord, wParam As WPARAM, lParam As LPARAM) As QWord
+#else
 Function AddTaskWndProc(hWnd As HWND, dwMsg As DWord, wParam As WPARAM, lParam As LPARAM) As DWord
+#endif
 	' TODO: この位置にウィンドウメッセージを処理するためのコードを記述します。
 
 	' イベントプロシージャの呼び出しを行います。
@@ -39,6 +53,9 @@ Sub AddTaskWnd_Create(ByRef CreateStruct As CREATESTRUCT)
 	' ウィンドウの表示位置を親ウィンドウに対して中心となるように調整する。
 	SetDialogCenter(hMainWnd, hAddTaskWnd)
 
+	' タスク名テキストボックスにキャレットを表示する。
+	SetFocus(GetDlgItem(hAddTaskWnd, TbTaskName))
+
 
 	If (fromParentTaskData = NULL) Then
 		' 新規データの作成
@@ -53,21 +70,92 @@ End Sub
 	ウィンドウ破棄時のイベント
 */
 Sub AddTaskWnd_Destroy()
-	' タスクデータを破棄する。
-	'Delete TaskData
+	If (fromParentTaskData <> NULL) Then
+		' 親ウィンドウからのオブジェクトが渡されたいた場合は破棄する。
+		delete fromParentTaskData
+	End If
 End Sub
 
 /**
 	「登録」ボタン押下時のイベント
 */
 Sub AddTaskWnd_BtnRegist_Click()
-	' 呼び出し元にタスクデータのオブジェクトを返却する。
-	EndDialog(hAddTaskWnd, 0)
+	' バリデーションチェック
+	If (getIsInputInvalid()) Then
+		MessageBox(hAddTaskWnd, Ex"タスク名が入力されていません。\r\nタスクを追加する場合はタスク名を入力してください。", "TaskList", MB_OK Or MB_ICONINFORMATION)
+		Exit Sub
+	End If
+
+	' タスクデータオブジェクトを作成する。
+	returnChildTaskData = createTaskData()
+	' 呼び出し元に「登録」ボタンが押下されてウィンドウが閉じられたことを通知する。
+	EndDialog(hAddTaskWnd, TRUE)	' TRUE:「登録」ボタンでウィンドウが閉じられた。
 End Sub
 
 /**
 	「キャンセル」ボタン押下時のイベント
 */
 Sub AddTaskWnd_BtnCancel_Click()
-	EndDialog(hAddTaskWnd, 0)
+	EndDialog(hAddTaskWnd, FALSE)
 End Sub
+
+/**
+	タスクデータを作成します。
+	return: 作成したタスクデータオブジェクト
+*/
+Function createTaskData() As *TaskData
+	Dim res = NULL As *TaskData
+	Dim isCompleate = NULL As Byte
+	Dim taskName = NULL As BytePtr
+	Dim taskStartDate = NULL As BytePtr
+	Dim taskDetail = NULL As BytePtr
+	Dim taskCompletedDateTime = NULL As BytePtr
+
+	Dim length = 0 As Long
+
+	' タスク完了状態
+	Dim checkBox = NULL As HWND
+	checkBox = GetDlgItem(hAddTaskWnd, CbTaskComplete)
+	isCompleate = SendMessage(checkBox, BM_GETCHECK, 0, 0) As Byte ' BST_CHECKED or BST_UNCHECKED が返却される。
+
+	' タスク名
+	Dim tbTaskName = NULL As HWND
+	tbTaskName = GetDlgItem(hAddTaskWnd, TbTaskName)
+	length = GetWindowTextLength(tbTaskName)
+	taskName = calloc(length + 1)
+	GetWindowText(tbTaskName, taskName, length + 1)
+
+	' タスク内容
+	Dim tbTaskDetail = NULL As HWND
+	tbTaskDetail = GetDlgItem(hAddTaskWnd, TbTaskDescription)
+	length = GetWindowTextLength(tbTaskDetail)
+	taskDetail = calloc(length + 1)
+	GetWindowText(tbTaskDetail, taskDetail, length + 1)	
+
+	' タスクオブジェクトを作成
+	res = New TaskData(isCompleate, taskName, taskDetail)
+
+	' 文字列系のオブジェクトを破棄する。
+	free(taskName)
+	free(taskDetail)
+
+	createTaskData = res
+End Function
+
+/**
+	入力値検証を行います。
+	return: 入力内容に問題があった場合: TRUE, そうでない場合: FALSE
+*/
+Function getIsInputInvalid() As BOOL
+	Dim res = FALSE As BOOL
+
+	Dim taskNameLength = 0 As Long
+
+	taskNameLength = GetWindowTextLength(GetDlgItem(hAddTaskWnd, TbTaskName))
+
+	If (taskNameLength = 0) Then
+		res = TRUE
+	End If
+
+	getIsInputInvalid = res
+End Function

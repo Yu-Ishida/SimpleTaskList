@@ -8,6 +8,7 @@
 
 ' 子ウィンドウから受け取るタスクデータオブジェクト
 Dim fromChildTaskData As *TaskData
+
 /**
 	タスク追加ウィンドウに表示するタスクデータを設定します。(親ウィンドウ → 子ウィンドウへの設定)
 	TaskData: 設定するタスクデータオブジェクト
@@ -18,8 +19,11 @@ End Sub
 
 '-----------------------------------------------------------------------------
 ' ウィンドウメッセージを処理するためのコールバック関数
-
+#ifdef _WIN64
+Function MainWndProc(hWnd As HWND, dwMsg As DWord, wParam As WPARAM, lParam As LPARAM) As QWord
+#else
 Function MainWndProc(hWnd As HWND, dwMsg As DWord, wParam As WPARAM, lParam As LPARAM) As DWord
+#endif
 	' TODO: この位置にウィンドウメッセージを処理するためのコードを記述します。
 
 	' イベントプロシージャの呼び出しを行います。
@@ -53,23 +57,66 @@ End Sub
 	「項目追加」ボタン押下時のイベント
 */
 Sub MainWnd_BtnAddItem_Click()
+	Dim listView = NULL As HWND
+	listView = GetDlgItem(hMainWnd, LvTaskList)
+
 	' 親ウィンドウから子ウィンドウに対してタスクデータは NULL を設定する。
 	SetTaskDataParentToChild(NULL)
 
 	' 項目追加ダイアログボックスを開く
-	DialogBox(hMainWnd, "AddTaskWnd")
+	If DialogBox(hMainWnd, "AddTaskWnd") = TRUE Then
+		'「登録」ボタン押下によってウィンドウが閉じられた為、
+		' タスク登録ウィンドウで作成されたタスクオブジェクトを取得する。
+		Dim taskData = NULL As *TaskData
+		taskData = GetTaskDataFromChild()
+		Dim completedValue = 0 As Long
+		If (taskData->GetIsCompleted()) Then
+			completedValue = 2
+		Else
+			completedValue = 1
+		End If
+
+		' 取得したオブジェクトを展開し ListView  コントロールへ表示する。
+
+		Dim item = NULL As LVITEM
+		item.mask = LVIF_TEXT
+		item.pszText = taskData->GetTaskName()
+		item.iItem = 0
+		item.iSubItem = 0
+		ListView_InsertItem(listView, item)
+
+		item.mask = LVIF_TEXT
+		item.pszText = taskData->GetTaskDetail()
+		item.iItem = 0
+		item.iSubItem = 1
+		ListView_SetItem(listView, item)
+
+		' チェック状態の設定 (※ ActiveBasic には ListView_SetCheckState() マクロが無い為、下記の様な処理を実装する。)
+		' 参考資料: INDEXTOSTATEIMAGEMASK マクロ (commctrl.h) - Win32 apps _ Microsoft Learn
+		' URL: https://learn.microsoft.com/ja-jp/windows/win32/api/commctrl/nf-commctrl-indextostateimagemask
+		ListView_SetItemState(listView, 0, (completedValue << 12), LVIS_STATEIMAGEMASK)
+
+		' 先頭行を選択させる。
+		ListView_SetItemState(listView, 0, LVIS_SELECTED Or LVIS_FOCUSED, LVIS_SELECTED Or LVIS_FOCUSED)
+	End If
 End Sub
 
 /**
 	「行削除」ボタン押下時のイベント
 */
 Sub MainWnd_BtnDeleteRow_Click()
+	Dim listView = NULL As HWND
+	listView = GetDlgItem(hMainWnd, LvTaskList)
+
 	' 選択行を取得する。
 	Dim selectedRowIndex = 0 As Long
-	selectedRowIndex = GetListViewSelectedRowIndex(GetDlgItem(hMainWnd, LvTaskList))
+	selectedRowIndex = GetListViewSelectedRowIndex(listView)
 
 	' 選択行のを ListView から削除する。
+	ListView_DeleteItem(listView, selectedRowIndex)
 
+	' 先頭行を選択させる。
+	ListView_SetItemState(listView, 0, LVIS_SELECTED Or LVIS_FOCUSED, LVIS_SELECTED Or LVIS_FOCUSED)
 End Sub
 
 /**
